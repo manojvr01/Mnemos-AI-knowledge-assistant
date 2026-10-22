@@ -102,50 +102,50 @@ export function ChatWorkspace({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-black overflow-hidden bg-grid-pattern">
+    <div className="flex-1 flex flex-col h-full bg-black overflow-hidden bg-grid-pattern">
       {/* Top Banner / Mode Bar */}
-      <div className="px-6 py-3.5 border-b border-[#1C1C1C] bg-[#050505]/90 backdrop-blur-md flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="px-3 sm:px-6 py-2.5 sm:py-3.5 border-b border-[#1C1C1C] bg-[#050505]/90 backdrop-blur-md flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
             <span className="text-xs font-semibold text-white">AI Research Chat</span>
-            <span className="text-neutral-600 text-xs">•</span>
-            <span className="text-xs text-indigo-400 font-medium">Strictly Grounded</span>
+            <span className="text-neutral-600 text-xs hidden sm:inline">•</span>
+            <span className="text-xs text-indigo-400 font-medium hidden sm:inline">Strictly Grounded</span>
           </div>
 
           {/* Scope Selector: All Documents vs Single Document */}
-          <div className="flex items-center gap-1.5 ml-4 px-2.5 py-1 rounded-xl bg-indigo-950/30 border border-indigo-500/30 text-xs">
-            <span className="text-[11px] text-indigo-300 font-medium">Scope:</span>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-indigo-950/30 border border-indigo-500/30 text-xs max-w-[200px] sm:max-w-none">
+            <span className="text-[10px] sm:text-[11px] text-indigo-300 font-medium shrink-0">Scope:</span>
             <select
               value={selectedDocumentId || "ALL"}
               onChange={(e) => {
                 const val = e.target.value;
                 onSelectDocumentScope?.(val === "ALL" ? null : val);
               }}
-              className="bg-transparent text-xs text-white font-medium focus:outline-none cursor-pointer"
+              className="bg-transparent text-[11px] sm:text-xs text-white font-medium focus:outline-none cursor-pointer truncate max-w-[130px] sm:max-w-[220px]"
             >
               <option value="ALL" className="bg-[#0A0A0A] text-white">
-                All Documents ({documents.filter((d) => d.status === "INDEXED").length} indexed)
+                All Documents ({documents.filter((d) => d.status === "INDEXED").length})
               </option>
               {documents
                 .filter((d) => d.status === "INDEXED")
                 .map((d) => (
                   <option key={d.id} value={d.id} className="bg-[#0A0A0A] text-white">
-                    Single: {d.original_filename}
+                    {d.original_filename}
                   </option>
                 ))}
             </select>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] text-neutral-300">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-emerald-400 font-medium">Anti-Hallucination Active</span>
+        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-neutral-300">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span className="text-emerald-400 font-medium">Grounded RAG</span>
         </div>
       </div>
 
       {/* Message Stream */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500/20 via-purple-500/20 to-pink-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-lg shadow-indigo-500/10">

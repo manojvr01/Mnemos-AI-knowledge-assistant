@@ -65,24 +65,24 @@ export function KnowledgeDashboard({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-black bg-grid-pattern">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 bg-black bg-grid-pattern">
       {/* Header Banner */}
-      <div className="flex items-center justify-between border-b border-[#1C1C1C] pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1C1C1C] pb-5 sm:pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Knowledge Corpus</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Knowledge Corpus</h1>
           <p className="text-xs text-neutral-400 mt-1">
             Ingest, inspect, and verify internal documents. All vectors are strictly multi-tenant isolated.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-300 border border-indigo-500/30 shadow-sm shadow-indigo-500/10">
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] sm:text-[11px] font-semibold px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-300 border border-indigo-500/30 shadow-sm shadow-indigo-500/10">
             Google Gemini + pgvector (768-dim)
           </span>
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Metrics Grid (1 col on mobile, 2 on tablet, 4 on desktop) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-[#0A0A0A] border border-sky-500/20 hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all rounded-2xl p-5 space-y-2 group">
           <div className="flex items-center justify-between text-neutral-400">
             <span className="text-xs font-semibold text-sky-400">Total Documents</span>

@@ -18,27 +18,62 @@ interface SidebarProps {
   onTabChange: (tab: "dashboard" | "chat") => void;
   userEmail?: string;
   onLogout?: () => void;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
-export function Sidebar({ activeTab, onTabChange, userEmail, onLogout }: SidebarProps) {
+export function Sidebar({ 
+  activeTab, 
+  onTabChange, 
+  userEmail, 
+  onLogout,
+  isOpenMobile = false,
+  onCloseMobile
+}: SidebarProps) {
   return (
-    <aside className="w-64 bg-[#050505] border-r border-[#1C1C1C] flex flex-col justify-between shrink-0 h-screen select-none">
-      {/* Brand & Workspace */}
-      <div className="p-4 space-y-6">
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-base tracking-tight text-white">Mnemos</span>
-              <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                PRO
-              </span>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpenMobile && (
+        <div 
+          onClick={onCloseMobile}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+        />
+      )}
+
+      {/* Sidebar Navigation */}
+      <aside 
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#050505] border-r border-[#1C1C1C] flex flex-col justify-between shrink-0 h-screen select-none transition-transform duration-200 ease-in-out ${
+          isOpenMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        {/* Brand & Workspace */}
+        <div className="p-4 space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-base tracking-tight text-white">Mnemos</span>
+                  <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                    PRO
+                  </span>
+                </div>
+                <p className="text-[11px] text-neutral-400 font-medium">Knowledge Assistant</p>
+              </div>
             </div>
-            <p className="text-[11px] text-neutral-400 font-medium">Knowledge Assistant</p>
+
+            {/* Mobile Close Button */}
+            {onCloseMobile && (
+              <button
+                onClick={onCloseMobile}
+                className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
+              >
+                ✕
+              </button>
+            )}
           </div>
-        </div>
 
         {/* Workspace Selector */}
         <div className="bg-[#0C0C0C] border border-[#1F1F1F] rounded-xl p-2.5 flex items-center justify-between hover:border-indigo-500/40 transition cursor-pointer group">
@@ -60,7 +95,10 @@ export function Sidebar({ activeTab, onTabChange, userEmail, onLogout }: Sidebar
         {/* Primary Navigation */}
         <nav className="space-y-1.5">
           <button
-            onClick={() => onTabChange("dashboard")}
+            onClick={() => {
+              onTabChange("dashboard");
+              onCloseMobile?.();
+            }}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
               activeTab === "dashboard"
                 ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30 font-medium"
@@ -72,7 +110,10 @@ export function Sidebar({ activeTab, onTabChange, userEmail, onLogout }: Sidebar
           </button>
 
           <button
-            onClick={() => onTabChange("chat")}
+            onClick={() => {
+              onTabChange("chat");
+              onCloseMobile?.();
+            }}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
               activeTab === "chat"
                 ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30 font-medium"
@@ -127,5 +168,6 @@ export function Sidebar({ activeTab, onTabChange, userEmail, onLogout }: Sidebar
         </div>
       </div>
     </aside>
+    </>
   );
 }

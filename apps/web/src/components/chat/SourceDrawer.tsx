@@ -22,7 +22,15 @@ export function SourceDrawer({ citation, isOpen, onClose }: SourceDrawerProps) {
     : 85;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-[#0A0A0A] border-l border-[#222222] shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
+    <>
+      {/* Mobile & Tablet Backdrop */}
+      <div 
+        onClick={onClose}
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+      />
+
+      {/* Drawer Panel */}
+      <div className="fixed inset-y-0 right-0 w-full sm:w-96 max-w-full bg-[#0A0A0A] border-l border-[#222222] shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
       {/* Drawer Header */}
       <div className="p-5 border-b border-[#1F1F1F] bg-[#0E0E0E] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -122,5 +130,6 @@ export function SourceDrawer({ citation, isOpen, onClose }: SourceDrawerProps) {
         </button>
       </div>
     </div>
+    </>
   );
 }

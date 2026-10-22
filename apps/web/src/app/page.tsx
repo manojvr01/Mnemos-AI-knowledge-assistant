@@ -7,6 +7,7 @@ import { ChatWorkspace } from "@/components/chat/ChatWorkspace";
 import { SourceDrawer } from "@/components/chat/SourceDrawer";
 import { api } from "@/lib/api";
 import { Document, ChatMessage, Citation } from "@/types";
+import { Menu, Sparkles, Database, MessageSquare } from "lucide-react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "chat">("dashboard");
@@ -19,6 +20,7 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("analyst@mnemos.ai");
   const [selectedDocumentScope, setSelectedDocumentScope] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Load initial documents & ensure user session
   useEffect(() => {
@@ -153,46 +155,96 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-black text-white">
-      {/* Primary Sidebar */}
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-black text-white">
+      {/* Primary Sidebar (Desktop persistent, Mobile slide-in drawer) */}
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
         userEmail={userEmail}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Main Workspace Body */}
-      <main className="flex-1 flex overflow-hidden relative">
-        {activeTab === "dashboard" ? (
-          <KnowledgeDashboard
-            documents={documents}
-            onUpload={handleUpload}
-            onDelete={handleDelete}
-            onInspectDocument={handleInspectDocument}
-          />
-        ) : (
-          <ChatWorkspace
-            messages={messages}
-            documents={documents}
-            selectedDocumentId={selectedDocumentScope}
-            onSelectDocumentScope={(docId) => {
-              setSelectedDocumentScope(docId);
-              setActiveConversationId(null);
-              setMessages([]);
-            }}
-            onSendMessage={handleSendMessage}
-            onSelectCitation={handleSelectCitation}
-            isSending={isSending}
-          />
-        )}
+      {/* Main Workspace Body & Mobile Header */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* Mobile Top Navigation Header */}
+        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#080808] border-b border-[#1C1C1C] shrink-0 z-30">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white transition"
+              title="Open Navigation"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-sm">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-bold text-sm text-white">Mnemos</span>
+            </div>
+          </div>
 
-        {/* Verifiable Source Inspection Drawer */}
-        <SourceDrawer
-          citation={selectedCitation}
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-        />
-      </main>
+          {/* Quick Tab Switcher on Mobile Header */}
+          <div className="flex items-center gap-1 bg-[#121212] p-1 rounded-xl border border-neutral-800">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                activeTab === "dashboard"
+                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              <Database className="w-3 h-3" />
+              <span className="hidden xs:inline">Corpus</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("chat")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                activeTab === "chat"
+                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              <MessageSquare className="w-3 h-3" />
+              <span className="hidden xs:inline">Chat</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Dynamic Workspace Content */}
+        <main className="flex-1 flex overflow-hidden relative">
+          {activeTab === "dashboard" ? (
+            <KnowledgeDashboard
+              documents={documents}
+              onUpload={handleUpload}
+              onDelete={handleDelete}
+              onInspectDocument={handleInspectDocument}
+            />
+          ) : (
+            <ChatWorkspace
+              messages={messages}
+              documents={documents}
+              selectedDocumentId={selectedDocumentScope}
+              onSelectDocumentScope={(docId) => {
+                setSelectedDocumentScope(docId);
+                setActiveConversationId(null);
+                setMessages([]);
+              }}
+              onSendMessage={handleSendMessage}
+              onSelectCitation={handleSelectCitation}
+              isSending={isSending}
+            />
+          )}
+
+          {/* Verifiable Source Inspection Drawer */}
+          <SourceDrawer
+            citation={selectedCitation}
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+          />
+        </main>
+      </div>
     </div>
   );
 }
