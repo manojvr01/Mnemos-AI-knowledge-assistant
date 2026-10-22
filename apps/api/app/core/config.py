@@ -1,3 +1,4 @@
+import os
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Union
@@ -24,7 +25,22 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://mnemos_user:mnemos_password@localhost:5432/mnemos_dev"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./data/mnemos.db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_db_url(cls, v: Union[str, None]) -> str:
+        if not v:
+            return "sqlite+aiosqlite:///./data/mnemos.db"
+        # If in cloud environment without custom PostgreSQL, fallback to embedded SQLite
+        if "localhost:5432" in v and (os.environ.get("RENDER") or os.environ.get("PORT")):
+            return "sqlite+aiosqlite:///./data/mnemos.db"
+        # Convert postgres:// or postgresql:// to postgresql+asyncpg:// for async SQLAlchemy
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif v.startswith("postgresql://") and not v.startswith("postgresql+asyncpg://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
     
     # Security
     JWT_SECRET: str = "dev_jwt_secret_change_in_production_min32chars"

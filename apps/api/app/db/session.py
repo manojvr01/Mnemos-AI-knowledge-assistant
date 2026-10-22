@@ -1,6 +1,11 @@
+import os
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from app.core.config import settings
+
+# Ensure local runtime storage & database directories exist
+os.makedirs("./data", exist_ok=True)
+os.makedirs(settings.STORAGE_LOCAL_ROOT, exist_ok=True)
 
 # In test mode or when running SQLite, connect_args can be set appropriately
 connect_args = {}
