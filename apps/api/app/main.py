@@ -26,10 +26,11 @@ def create_application() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Set up CORS middleware
+    # Set up CORS middleware (supports local, configured origins, and Vercel domains)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.BACKEND_CORS_ORIGINS,
+        allow_origin_regex=r"^https://.*\.vercel\.app$",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
