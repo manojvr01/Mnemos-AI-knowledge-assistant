@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: mnemos-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mnemos_dev
+      POSTGRES_USER: mnemos_user
+      POSTGRES_PASSWORD: mnemos_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - mnemos_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mnemos_user -d mnemos_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: mnemos-api
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mnemos_user:mnemos_password@db:5432/mnemos_dev
+      JWT_SECRET: dev_jwt_secret_change_in_production_min32chars
+      STORAGE_BACKEND: local
+      STORAGE_LOCAL_ROOT: /data/mnemos/storage
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+      GEMINI_EMBEDDING_MODEL: ${GEMINI_EMBEDDING_MODEL:-text-embedding-004}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-768}
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      GEMINI_CHAT_MODEL: ${GEMINI_CHAT_MODEL:-gemini-1.5-flash}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - mnemos_storage:/data/mnemos/storage
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: mnemos-web
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+
+volumes:
+  mnemos_pgdata:
+  mnemos_storage:
